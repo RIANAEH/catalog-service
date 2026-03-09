@@ -15,7 +15,7 @@ java {
     }
 }
 
-repositories {
+repositories { // 의존 라이브러리를 검색할 아티팩트 저장소
     mavenCentral()
 }
 
