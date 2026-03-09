@@ -1,4 +1,4 @@
-package org.polarbookshop.catalogservice
+package org.polarbookshop.catalogservice.web
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
