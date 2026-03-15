@@ -76,7 +76,7 @@ class BookValidationTests {
      */
     @Test
     fun `when all fields are valid then validation succeeds`() {
-        val book = Book("1234567890", "Title", "Author", 9.90)
+        val book = Book(isbn = "1234567890", title = "Title", author = "Author", price = 9.90)
         /**
          * [클라우드 네이티브 스프링 - Bean Validation]
          * validator.validate(): 객체의 모든 제약 조건 검증
@@ -96,7 +96,7 @@ class BookValidationTests {
      */
     @Test
     fun `when isbn is blank then validation fails`() {
-        val book = Book("", "Title", "Author", 9.90)
+        val book = Book(isbn = "", title = "Title", author = "Author", price = 9.90)
         val violations = validator.validate(book)
         assertThat(violations).hasSize(2)
         /**
@@ -120,7 +120,7 @@ class BookValidationTests {
      */
     @Test
     fun `when isbn format is invalid then validation fails`() {
-        val book = Book("123ABC456", "Title", "Author", 9.90)
+        val book = Book(isbn = "123ABC456", title = "Title", author = "Author", price = 9.90)
         val violations = validator.validate(book)
         assertThat(violations).hasSize(1)
         /**
@@ -134,14 +134,14 @@ class BookValidationTests {
 
     @Test
     fun `when isbn is valid 13 digits then validation succeeds`() {
-        val book = Book("1234567890123", "Title", "Author", 9.90)
+        val book = Book(isbn = "1234567890123", title = "Title", author = "Author", price = 9.90)
         val violations = validator.validate(book)
         assertThat(violations).isEmpty()
     }
 
     @Test
     fun `when title is blank then validation fails`() {
-        val book = Book("1234567890", "", "Author", 9.90)
+        val book = Book(isbn = "1234567890", title = "", author = "Author", price = 9.90)
         val violations = validator.validate(book)
         assertThat(violations).hasSize(1)
         assertThat(violations.first().message).isEqualTo("Title must not be blank")
@@ -149,7 +149,7 @@ class BookValidationTests {
 
     @Test
     fun `when author is blank then validation fails`() {
-        val book = Book("1234567890", "Title", "", 9.90)
+        val book = Book(isbn = "1234567890", title = "Title", author = "", price = 9.90)
         val violations = validator.validate(book)
         assertThat(violations).hasSize(1)
         assertThat(violations.first().message).isEqualTo("Author must not be blank")
@@ -164,7 +164,7 @@ class BookValidationTests {
      */
     @Test
     fun `when price is zero then validation fails`() {
-        val book = Book("1234567890", "Title", "Author", 0.0)
+        val book = Book(isbn = "1234567890", title = "Title", author = "Author", price = 0.0)
         val violations = validator.validate(book)
         assertThat(violations).hasSize(1)
         assertThat(violations.first().message).isEqualTo("Price must be a positive value")
@@ -172,7 +172,7 @@ class BookValidationTests {
 
     @Test
     fun `when price is negative then validation fails`() {
-        val book = Book("1234567890", "Title", "Author", -9.90)
+        val book = Book(isbn = "1234567890", title = "Title", author = "Author", price = -9.90)
         val violations = validator.validate(book)
         assertThat(violations).hasSize(1)
         assertThat(violations.first().message).isEqualTo("Price must be a positive value")

@@ -41,7 +41,7 @@ class BookJsonTests(
      */
     @Test
     fun `serialize book to json`() {
-        val book = Book("1234567890", "Title", "Author", 9.90)
+        val book = Book(isbn = "1234567890", title = "Title", author = "Author", price = 9.90)
 
         /**
          * [클라우드 네이티브 스프링 - JacksonTester]
@@ -105,6 +105,6 @@ class BookJsonTests(
         val parsedBook = json.parse(content)
 
         assertThat(parsedBook).usingRecursiveComparison()
-            .isEqualTo(Book("1234567890", "Title", "Author", 9.90))
+            .isEqualTo(Book(isbn = "1234567890", title = "Title", author = "Author", price = 9.90))
     }
 }

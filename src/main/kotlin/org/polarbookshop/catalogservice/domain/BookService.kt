@@ -87,7 +87,9 @@ class BookService(
      * [Kotlin - copy() 함수]
      * data class의 일부 프로퍼티만 변경한 복사본 생성
      * - 불변 객체 패턴 구현에 유용
-     * - ISBN은 변경하지 않고 나머지만 업데이트
+     * - 명시하지 않은 프로퍼티(id, version, isbn)는 원본 값 유지
+     * - id 유지 → UPDATE 쿼리 실행 (INSERT가 아님)
+     * - version 유지 → Spring Data가 낙관적 잠금 검증 및 자동 증가
      *
      * Java에서는 Builder 패턴이나 새 객체 생성 필요
      */

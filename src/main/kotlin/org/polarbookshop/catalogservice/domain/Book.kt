@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Positive
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Version
 
 /**
  * [Kotlin - data class]
@@ -14,14 +16,28 @@ import jakarta.validation.constraints.Positive
  * - copy(): 일부 프로퍼티만 변경한 복사본 생성
  * - componentN(): 구조 분해 선언 지원 (val (isbn, title) = book)
  *
- * Java에서 동일한 기능 구현 시:
- * - 모든 필드, 생성자, getter, equals, hashCode, toString 직접 작성
- * - 또는 Lombok @Data 사용
+ * [Kotlin - 기본값 파라미터로 정적 팩토리 메서드 대체]
+ * Java에서는 id, version 없이 Book을 생성하려면 정적 팩토리 메서드 필요:
+ * ```java
+ * public static Book of(String isbn, String title, String author, Double price) {
+ *     return new Book(null, isbn, title, author, price, 0);
+ * }
+ * ```
+ * Kotlin은 기본값(id = null, version = 0) + 명명된 인자로 해결:
+ * ```kotlin
+ * val book = Book(isbn = "1234567890", title = "Title", author = "Author", price = 9.90)
+ * ```
+ * - 빌더 패턴, 텔레스코핑 생성자 패턴도 불필요
  *
  * [클라우드 네이티브 스프링 - 도메인 모델]
  * 도메인 주도 설계(DDD)의 엔티티 또는 값 객체
  * - 비즈니스 로직의 핵심 개념을 표현
  * - 불변 객체로 설계하여 스레드 안전성 확보
+ *
+ * [클라우드 네이티브 스프링 - Spring Data JDBC 엔티티]
+ * JPA와 달리 단순한 POJO로 엔티티 정의
+ * - @Entity 불필요, @Id만 필수
+ * - 기본 생성자 불필요 (Kotlin data class와 잘 맞음)
  *
  * [실무 조언]
  * - data class는 불변(immutable)으로 설계 권장 (val 사용)
@@ -29,6 +45,31 @@ import jakarta.validation.constraints.Positive
  * - JPA 엔티티로 사용 시에는 주의 필요 (기본 생성자, var 필요)
  */
 data class Book(
+
+    /**
+     * [클라우드 네이티브 스프링 - @Id]
+     * Spring Data의 식별자 어노테이션
+     * - 엔티티의 기본 키(Primary Key)를 지정
+     * - DB에서 자동 생성 시 null 허용 필요
+     *
+     * [실무 조언 - 대리키(Surrogate Key) vs 자연키(Natural Key)]
+     * ISBN이 자연키로 사용 가능하지만 대리키(id)를 사용하는 이유:
+     * 1. 자연키 변경 가능성: ISBN 체계 변경, 오류 수정 등으로 변경될 수 있음
+     * 2. 성능: Long(8바이트) vs String(가변) - 인덱스, 조인 성능 우수
+     * 3. 외래키 단순화: 다른 테이블에서 참조 시 단일 Long 컬럼으로 충분
+     * 4. 관심사 분리: 비즈니스 식별자(ISBN)와 기술적 식별자(id) 분리
+     *
+     * [Kotlin - Nullable 타입과 기본값]
+     * Long?: null 허용 타입, = null: 기본값 설정
+     * - 새 엔티티 생성 시 id 없이 생성 가능
+     * - 저장 후 DB에서 생성된 id가 할당됨
+     *
+     * Java로 작성했다면:
+     * @Id
+     * private Long id;  // wrapper 타입으로 null 허용
+     */
+    @Id
+    val id: Long? = null,
 
     /**
      * [Kotlin - @field: 어노테이션 사용 위치 지정]
@@ -73,5 +114,23 @@ data class Book(
      */
     @field:NotNull(message = "Price must not be null")
     @field:Positive(message = "Price must be a positive value")
-    val price: Double
+    val price: Double,
+
+    /**
+     * [클라우드 네이티브 스프링 - @Version (낙관적 잠금)]
+     * 동시성 제어를 위한 버전 필드
+     * - 엔티티 수정 시 자동으로 버전 증가
+     * - 동시 수정 시 OptimisticLockingFailureException 발생
+     *
+     * [15-Factor #8 Concurrency]
+     * 수평 확장 환경에서 데이터 일관성 보장
+     * - 여러 인스턴스가 동시에 같은 데이터 수정 시 충돌 감지
+     * - 비관적 잠금(DB Lock)보다 성능 우수
+     *
+     * [실무 조언]
+     * - 충돌 발생 시 재시도 로직 구현 필요
+     * - 충돌이 빈번하면 비관적 잠금 고려
+     */
+    @Version
+    val version: Int = 0
 )
