@@ -14,6 +14,36 @@ spring:
     # - 로그 집계 시 서비스 식별자로 활용
     name: catalog-service
 
+  # ===========================================
+  # [클라우드 네이티브 스프링 - 데이터소스 설정]
+  # [15-Factor #4 Backing Services] DB를 연결된 리소스로 취급
+  # ===========================================
+  datasource:
+    # [15-Factor #3 Config] 환경 변수로 오버라이드 가능
+    # - SPRING_DATASOURCE_URL
+    # - SPRING_DATASOURCE_USERNAME
+    # - SPRING_DATASOURCE_PASSWORD
+    url: jdbc:postgresql://localhost:5432/polardb_catalog
+    username: user
+    password: password
+
+    # [클라우드 네이티브 - HikariCP 커넥션 풀]
+    # Spring Boot 기본 커넥션 풀
+    # - 고성능, 경량 커넥션 풀
+    # - 컨테이너 환경에서 리소스 효율적 관리
+    hikari:
+      # 커넥션 타임아웃: 풀에서 커넥션 획득 대기 시간
+      connection-timeout: 2000
+      # 최대 풀 크기: 동시 DB 연결 수 제한
+      # [실무 조언] 컨테이너 리소스와 DB 연결 한도 고려하여 설정
+      maximum-pool-size: 5
+
+  # [클라우드 네이티브 스프링 - Spring Data JDBC 설정]
+  jdbc:
+    template:
+      # 쿼리 타임아웃 (초): 장시간 쿼리 방지
+      query-timeout: 5
+
 server:
   # [실무 조언 - 포트 설정]
   # 기본 포트 8080 대신 고유 포트 사용
