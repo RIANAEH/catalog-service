@@ -107,12 +107,13 @@ data class Book(
     val author: String,
 
     /**
-     * [클라우드 네이티브 스프링 - 선택적 필드]
-     * 출판사 정보 (선택 입력)
-     * - null 허용으로 기존 데이터와의 호환성 유지
-     * - Flyway V2 마이그레이션으로 컬럼 추가
+     * [클라우드 네이티브 스프링 - 필수 필드 추가]
+     * 출판사 정보
+     * - V2: 컬럼 추가 (NULL 허용)
+     * - V3: 기존 null 데이터 기본값 설정 후 NOT NULL 제약 추가
      */
-    val publisher: String? = null,
+    @field:NotBlank(message = "Publisher must not be blank")
+    val publisher: String,
 
     /**
      * [클라우드 네이티브 스프링 - 숫자 검증]

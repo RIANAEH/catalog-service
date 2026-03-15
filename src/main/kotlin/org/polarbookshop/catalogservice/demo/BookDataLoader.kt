@@ -57,12 +57,14 @@ class BookDataLoader(
             isbn = "1234567891",
             title = "Northern Lights",
             author = "Lyra Silverstar",
+            publisher = "Polarsophia",
             price = 9.90
         )
         val book2 = Book(
             isbn = "1234567892",
             title = "Polar Journey",
             author = "Iorek Polarson",
+            publisher = "Polarsophia",
             price = 12.90
         )
 
