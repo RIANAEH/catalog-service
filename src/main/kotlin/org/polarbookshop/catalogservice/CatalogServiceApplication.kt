@@ -1,6 +1,7 @@
 package org.polarbookshop.catalogservice
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 
 /**
@@ -9,6 +10,12 @@ import org.springframework.boot.runApplication
  * - @Configuration: 빈 정의를 위한 설정 클래스
  * - @EnableAutoConfiguration: 클래스패스 기반 자동 설정 활성화
  * - @ComponentScan: 현재 패키지 하위의 컴포넌트 자동 스캔
+ *
+ * [클라우드 네이티브 스프링 - @ConfigurationPropertiesScan]
+ * @ConfigurationProperties가 붙은 클래스를 자동으로 스캔하여 빈으로 등록
+ * - Spring Boot 2.2+에서 도입된 방식
+ * - 기존 @EnableConfigurationProperties(PolarProperties::class) 대신 사용
+ * - 패키지 하위의 모든 @ConfigurationProperties 클래스 자동 감지
  *
  * [실무 조언]
  * - 메인 클래스는 루트 패키지에 위치시켜 하위 패키지 전체 스캔
@@ -19,6 +26,7 @@ import org.springframework.boot.runApplication
  * Java: public class CatalogServiceApplication { }
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 class CatalogServiceApplication
 
 /**

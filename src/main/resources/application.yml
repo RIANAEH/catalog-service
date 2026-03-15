@@ -50,3 +50,13 @@ server:
       # - 프로덕션에서는 부하 테스트 후 적정값 설정
       # - 쿠버네티스 HPA와 함께 사용 시 Pod 스케일링과 조율
       min-spare: 5
+
+# ===========================================
+# [커스텀 설정 - Polar Bookshop]
+# @ConfigurationProperties로 타입 안전하게 바인딩
+# ===========================================
+polar:
+  # [클라우드 네이티브 - 환경별 설정]
+  # 환경 변수로 오버라이드: POLAR_GREETING
+  # 쿠버네티스 ConfigMap으로 환경별 메시지 설정 가능
+  greeting: "Welcome to the local book catalog!"

@@ -47,3 +47,9 @@
 - 언어: Kotlin
 - 프레임워크: Spring Boot
 - 빌드 도구: Gradle
+
+## 참고 문서
+
+- `docs/15-factor-methodology.md`: 15-Factor App 방법론
+  - 코드 작성 시 해당 원칙들을 고려하여 구현
+  - 주석에 관련 Factor 번호와 원칙명 명시 (예: `[15-Factor #3 Config]`)
