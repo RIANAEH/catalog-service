@@ -51,6 +51,20 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    /**
+     * [클라우드 네이티브 스프링 - Testcontainers]
+     * 테스트용 Docker 컨테이너를 자동으로 관리
+     * - 실제 PostgreSQL과 동일한 환경에서 테스트
+     * - H2 같은 인메모리 DB와 달리 프로덕션 환경과 일치
+     *
+     * [15-Factor #10 Dev/Prod Parity]
+     * 개발/테스트 환경을 프로덕션과 최대한 유사하게 유지
+     */
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

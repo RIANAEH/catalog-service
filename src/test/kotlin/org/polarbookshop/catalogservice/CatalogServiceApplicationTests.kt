@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.polarbookshop.catalogservice.domain.Book
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 
 /**
@@ -18,6 +19,14 @@ import org.springframework.test.web.reactive.server.WebTestClient
  * - 포트 충돌 방지 (CI 환경에서 여러 테스트 동시 실행)
  * - WebTestClient로 실제 HTTP 요청 테스트
  *
+ * [클라우드 네이티브 스프링 - Testcontainers JDBC URL]
+ * application-integration.yml에서 jdbc:tc:postgresql:14.4:/// 형식으로 설정
+ * - 코드에서 @Container, @ServiceConnection 불필요
+ * - JDBC URL만으로 컨테이너 자동 관리
+ *
+ * [15-Factor #10 Dev/Prod Parity]
+ * 개발/테스트 환경을 프로덕션과 최대한 유사하게 유지
+ *
  * [실무 조언]
  * - 통합 테스트는 느리므로 핵심 시나리오만 테스트
  * - 단위 테스트 > 슬라이스 테스트 > 통합 테스트 순으로 많이 작성 (테스트 피라미드)
@@ -30,6 +39,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
+@ActiveProfiles("integration")
 class CatalogServiceApplicationTests(
     /**
      * [클라우드 네이티브 스프링 - WebTestClient]

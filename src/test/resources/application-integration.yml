@@ -1,0 +1,31 @@
+# ===========================================
+# [클라우드 네이티브 스프링 - 통합 테스트 설정]
+# integration 프로파일용 설정 파일
+#
+# [Spring Boot 프로파일별 설정 분리]
+# - application.yml: 기본 설정 (로컬 개발/프로덕션)
+# - application-{profile}.yml: 프로파일별 설정 (동일 키는 덮어씀)
+#
+# 테스트에서 @ActiveProfiles("integration") 지정 시:
+# 1. application.yml 로드
+# 2. application-integration.yml 로드 (datasource.url 덮어씀)
+#
+# 이점:
+# - 메인 설정은 실제 DB 연결 유지
+# - 테스트 시에만 Testcontainers 사용
+# - 코드 변경 없이 설정만으로 환경 전환
+# ===========================================
+
+spring:
+  datasource:
+    # [클라우드 네이티브 스프링 - Testcontainers JDBC URL]
+    # jdbc:tc: 접두사로 Testcontainers 자동 시작
+    # - 코드에서 @Container, @ServiceConnection 불필요
+    # - JDBC URL만으로 컨테이너 자동 관리
+    # - 형식: jdbc:tc:postgresql:버전:///데이터베이스명
+    #
+    # [15-Factor #10 Dev/Prod Parity]
+    # 실제 PostgreSQL과 동일한 환경에서 테스트
+    url: jdbc:tc:postgresql:14.4:///polardb_catalog
+    username: user
+    password: password
