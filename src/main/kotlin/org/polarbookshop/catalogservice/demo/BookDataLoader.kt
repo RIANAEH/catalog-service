@@ -50,7 +50,9 @@ class BookDataLoader(
      */
     @EventListener(ApplicationReadyEvent::class)
     fun loadBookTestData() {
-        // 중복 데이터 방지: 이미 존재하는 ISBN은 저장하지 않음
+        // 기존 데이터 모두 삭제
+        bookRepository.deleteAll()
+
         val book1 = Book(
             isbn = "1234567891",
             title = "Northern Lights",
@@ -65,23 +67,11 @@ class BookDataLoader(
         )
 
         /**
-         * [Kotlin - listOf]
-         * 불변 리스트 생성 함수
-         * Java: Arrays.asList() 또는 List.of() (Java 9+)
+         * [클라우드 네이티브 스프링 - CrudRepository.saveAll()]
+         * 여러 엔티티를 한 번에 저장
+         * - 내부적으로 배치 처리하여 성능 향상
+         * - 단일 트랜잭션으로 처리됨
          */
-        listOf(book1, book2).forEach { book ->
-            /**
-             * [Kotlin - 스코프 함수 takeIf]
-             * 조건이 true면 객체 반환, false면 null 반환
-             * - 조건부 실행을 간결하게 표현
-             *
-             * Java로 작성했다면:
-             * if (!bookRepository.existsByIsbn(book.getIsbn())) {
-             *     bookRepository.save(book);
-             * }
-             */
-            book.takeIf { !bookRepository.existsByIsbn(it.isbn) }
-                ?.let { bookRepository.save(it) }
-        }
+        bookRepository.saveAll(listOf(book1, book2))
     }
 }

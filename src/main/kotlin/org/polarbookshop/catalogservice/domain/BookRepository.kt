@@ -1,52 +1,59 @@
 package org.polarbookshop.catalogservice.domain
 
+import org.springframework.data.jdbc.repository.query.Modifying
+import org.springframework.data.jdbc.repository.query.Query
+import org.springframework.data.repository.CrudRepository
+import org.springframework.transaction.annotation.Transactional
+
 /**
- * [클라우드 네이티브 스프링 - 리포지토리 패턴]
- * 데이터 접근 계층을 추상화하는 인터페이스
- * - 도메인 계층이 영속성 기술에 의존하지 않도록 분리
- * - 구현체 교체가 용이 (InMemory -> JPA -> R2DBC 등)
+ * [클라우드 네이티브 스프링 - Spring Data Repository]
+ * CrudRepository를 확장하여 기본 CRUD 메서드 자동 제공
+ * - save(), findById(), findAll(), deleteById() 등 기본 제공
+ * - 메서드 이름 기반 쿼리 자동 생성 (Query Methods)
+ *
+ * [Kotlin - 인터페이스 상속]
+ * CrudRepository<Book, Long>: 엔티티 타입과 ID 타입을 제네릭으로 지정
+ * - Book: 관리할 엔티티 타입
+ * - Long: @Id 필드의 타입
  *
  * [실무 조언]
- * - 도메인 패키지에 인터페이스, persistence 패키지에 구현체 배치
- * - 의존성 역전 원칙(DIP) 적용: 고수준 모듈이 저수준 모듈에 의존하지 않음
- * - 테스트 시 Mock 구현체로 쉽게 대체 가능
- *
- * [Kotlin - 인터페이스]
- * Java와 동일하게 interface 키워드 사용
- * - 프로퍼티 선언 가능 (추상 또는 기본 구현)
- * - 기본 메서드 구현 가능 (Java 8+ default 메서드와 유사)
+ * - Spring Data가 런타임에 구현체를 자동 생성 (프록시)
+ * - 복잡한 쿼리는 @Query 어노테이션으로 직접 작성
+ * - 도메인 패키지에 위치시켜 도메인 계층에서 접근
  */
-interface BookRepository {
+interface BookRepository : CrudRepository<Book, Long> {
 
     /**
-     * [Kotlin - 함수 선언]
-     * fun 키워드로 함수 선언
-     * 반환 타입은 콜론(:) 뒤에 명시
+     * [클라우드 네이티브 스프링 - Query Methods]
+     * 메서드 이름으로 쿼리 자동 생성
+     * - findBy + 필드명: SELECT ... WHERE 필드 = ?
+     * - Spring Data가 메서드 이름을 파싱하여 쿼리 생성
      *
-     * Java: Iterable<Book> findAll();
-     * Kotlin: fun findAll(): Iterable<Book>
-     */
-    fun findAll(): Iterable<Book>
-
-    /**
-     * [Kotlin - Nullable 타입]
-     * Book?: null을 허용하는 타입 (찾지 못하면 null 반환)
-     * Java에서는 Optional<Book> 또는 @Nullable 어노테이션 사용
-     *
-     * Kotlin의 null 안전성:
-     * - 컴파일 타임에 NPE 가능성 검사
-     * - ?. (안전 호출), ?: (엘비스 연산자), !! (강제 언래핑) 제공
+     * [Kotlin - Nullable 반환 타입]
+     * Book?: 결과가 없으면 null 반환
+     * - Optional<Book> 대신 Kotlin의 null 안전성 활용
      */
     fun findByIsbn(isbn: String): Book?
 
+    /**
+     * [클라우드 네이티브 스프링 - 존재 여부 확인]
+     * existsBy + 필드명: SELECT EXISTS(...)
+     * - count 쿼리보다 효율적 (첫 번째 결과만 확인)
+     */
     fun existsByIsbn(isbn: String): Boolean
 
-    fun save(book: Book): Book
-
     /**
-     * [Kotlin - Unit 반환 타입]
-     * 반환값이 없는 함수는 Unit 타입 (생략 가능)
-     * Java의 void와 유사하지만, Unit은 실제 객체 (싱글톤)
+     * [클라우드 네이티브 스프링 - @Query + @Modifying]
+     * 커스텀 DELETE 쿼리 작성
+     * - @Modifying: INSERT, UPDATE, DELETE 쿼리임을 명시
+     * - @Transactional: 트랜잭션 내에서 실행
+     *
+     * [실무 조언]
+     * - CrudRepository의 deleteById()는 ID 기반 삭제
+     * - 비즈니스 키(ISBN) 기반 삭제는 커스텀 쿼리 필요
      */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM book WHERE isbn = :isbn")
     fun deleteByIsbn(isbn: String)
 }
