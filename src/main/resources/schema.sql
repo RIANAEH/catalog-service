@@ -38,5 +38,12 @@ CREATE TABLE book (
     -- [낙관적 잠금 - version]
     -- Spring Data가 UPDATE 시 자동으로 증가시킴
     -- WHERE version = ? 조건으로 동시성 충돌 감지
-    version             INT NOT NULL
+    version             INT NOT NULL,
+
+    -- [Auditing - 생성/수정 시간]
+    -- @EnableJdbcAuditing + @CreatedDate/@LastModifiedDate로 자동 관리
+    -- TIMESTAMP: PostgreSQL의 타임스탬프 타입 (타임존 없음)
+    -- [실무 조언] 분산 시스템에서는 UTC 기준으로 저장 권장
+    created_date        TIMESTAMP NOT NULL,
+    last_modified_date  TIMESTAMP NOT NULL
 );

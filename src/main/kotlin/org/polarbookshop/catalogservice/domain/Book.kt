@@ -4,8 +4,11 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Positive
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
+import java.time.Instant
 
 /**
  * [Kotlin - data class]
@@ -132,5 +135,24 @@ data class Book(
      * - 충돌이 빈번하면 비관적 잠금 고려
      */
     @Version
-    val version: Int = 0
+    val version: Int = 0,
+
+    /**
+     * [클라우드 네이티브 스프링 - @CreatedDate]
+     * 엔티티 생성 시점을 자동으로 기록 (@EnableJdbcAuditing 필요)
+     * - Instant: UTC 기준 타임스탬프, 분산 시스템에 적합
+     *
+     * @see docs/spring-data-auditing.md 활용 사례 참고
+     */
+    @CreatedDate
+    val createdDate: Instant? = null,
+
+    /**
+     * [클라우드 네이티브 스프링 - @LastModifiedDate]
+     * 엔티티 마지막 수정 시점을 자동으로 기록
+     *
+     * @see docs/spring-data-auditing.md 활용 사례 참고
+     */
+    @LastModifiedDate
+    val lastModifiedDate: Instant? = null
 )
