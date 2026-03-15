@@ -107,6 +107,14 @@ data class Book(
     val author: String,
 
     /**
+     * [클라우드 네이티브 스프링 - 선택적 필드]
+     * 출판사 정보 (선택 입력)
+     * - null 허용으로 기존 데이터와의 호환성 유지
+     * - Flyway V2 마이그레이션으로 컬럼 추가
+     */
+    val publisher: String? = null,
+
+    /**
      * [클라우드 네이티브 스프링 - 숫자 검증]
      * @NotNull: null 거부 (Kotlin의 non-null 타입과 별개로 런타임 검증)
      * @Positive: 0보다 큰 양수만 허용
