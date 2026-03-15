@@ -1,6 +1,7 @@
 package org.polarbookshop.catalogservice.domain
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest
@@ -36,6 +37,19 @@ import org.polarbookshop.catalogservice.config.DataConfig
 class BookRepositoryJdbcTests(
     @Autowired private val bookRepository: BookRepository
 ) {
+
+    /**
+     * [테스트 데이터 격리]
+     * Testcontainers 재사용 시 이전 실행의 잔여 데이터 정리
+     * - @DataJdbcTest의 @Transactional 롤백과 함께 사용
+     * - 병렬 테스트 실행 시에는 고유 데이터 방식 권장
+     *
+     * @see docs/testing-isolation.md 상세 내용 및 병렬 실행 주의점 참고
+     */
+    @BeforeEach
+    fun setUp() {
+        bookRepository.deleteAll()
+    }
 
     @Test
     fun `when findByIsbn with existing isbn then return book`() {

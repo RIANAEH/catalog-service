@@ -1,8 +1,10 @@
 package org.polarbookshop.catalogservice
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.polarbookshop.catalogservice.domain.Book
+import org.polarbookshop.catalogservice.domain.BookRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -18,6 +20,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
  * - 실제 서버를 랜덤 포트에서 시작
  * - 포트 충돌 방지 (CI 환경에서 여러 테스트 동시 실행)
  * - WebTestClient로 실제 HTTP 요청 테스트
+ * - 별도 스레드에서 실행되어 @Transactional 롤백이 적용되지 않음
  *
  * [클라우드 네이티브 스프링 - Testcontainers JDBC URL]
  * application-integration.yml에서 jdbc:tc:postgresql:14.4:/// 형식으로 설정
@@ -41,6 +44,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 )
 @ActiveProfiles("integration")
 class CatalogServiceApplicationTests(
+    @Autowired private val bookRepository: BookRepository,
     /**
      * [클라우드 네이티브 스프링 - WebTestClient]
      * 비동기/논블로킹 HTTP 클라이언트 (WebFlux 기반)
@@ -50,6 +54,19 @@ class CatalogServiceApplicationTests(
      */
     @Autowired private val webTestClient: WebTestClient
 ) {
+
+    /**
+     * [테스트 데이터 격리]
+     * RANDOM_PORT 환경에서는 @Transactional 롤백이 적용되지 않음
+     * - HTTP 요청이 별도 스레드에서 처리되어 테스트 트랜잭션 밖에서 실행
+     * - 명시적으로 데이터 정리 필요
+     *
+     * @see docs/testing-isolation.md 상세 내용 및 병렬 실행 주의점 참고
+     */
+    @BeforeEach
+    fun setUp() {
+        bookRepository.deleteAll()
+    }
 
     /**
      * [클라우드 네이티브 스프링 - E2E 테스트]
