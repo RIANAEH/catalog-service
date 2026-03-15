@@ -44,6 +44,19 @@ spring:
       # 쿼리 타임아웃 (초): 장시간 쿼리 방지
       query-timeout: 5
 
+  # [클라우드 네이티브 스프링 - SQL 초기화 설정]
+  sql:
+    init:
+      # mode: SQL 스크립트 실행 모드
+      # - always: 항상 실행 (개발/테스트 환경)
+      # - embedded: 내장 DB(H2 등)에서만 실행 (기본값)
+      # - never: 실행하지 않음
+      #
+      # [실무 조언]
+      # - 프로덕션에서는 Flyway/Liquibase 사용 권장
+      # - schema.sql은 개발 초기 단계에서만 사용
+      mode: always
+
 server:
   # [실무 조언 - 포트 설정]
   # 기본 포트 8080 대신 고유 포트 사용
