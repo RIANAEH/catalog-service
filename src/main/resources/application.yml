@@ -44,6 +44,14 @@ spring:
       # 쿼리 타임아웃 (초): 장시간 쿼리 방지
       query-timeout: 5
 
+  # [클라우드 네이티브 스프링 - Flyway 설정]
+  flyway:
+    # baseline-on-migrate: 기존 스키마가 있는 DB에 Flyway 도입 시 필요
+    # - 기존 테이블이 있지만 flyway_schema_history가 없을 때
+    # - V1 마이그레이션을 baseline으로 처리하고 V2부터 실행
+    # [실무 조언] 신규 프로젝트에서는 불필요, 기존 DB 마이그레이션 시에만 사용
+    baseline-on-migrate: true
+
 server:
   # [실무 조언 - 포트 설정]
   # 기본 포트 8080 대신 고유 포트 사용
