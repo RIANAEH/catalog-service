@@ -48,6 +48,21 @@ dependencies {
      */
     runtimeOnly("org.postgresql:postgresql")
 
+    /**
+     * [클라우드 네이티브 스프링 - Flyway]
+     * 데이터베이스 마이그레이션 도구
+     * - 버전 관리된 SQL 스크립트로 스키마 변경 관리
+     * - 자동으로 마이그레이션 이력 추적 (flyway_schema_history 테이블)
+     * - 롤백, 검증, 베이스라인 등 다양한 기능 제공
+     *
+     * [15-Factor #5 Build, Release, Run]
+     * 스키마 변경을 코드와 함께 버전 관리
+     * - 릴리스마다 일관된 스키마 보장
+     * - 여러 환경(dev, staging, prod)에서 동일한 마이그레이션 적용
+     */
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
