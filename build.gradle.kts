@@ -92,3 +92,75 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+/**
+ * [클라우드 네이티브 스프링 - Cloud Native Buildpacks]
+ * Dockerfile 없이 컨테이너 이미지를 빌드하는 방법
+ *
+ * Java의 Maven/Gradle 플러그인 방식과 비교:
+ * - Java(Maven): spring-boot:build-image
+ * - Kotlin/Gradle: tasks.bootBuildImage { ... }
+ *
+ * 빌드팩 방식의 장점:
+ * - Dockerfile을 직접 관리할 필요 없음 (보안 패치 자동 적용)
+ * - OCI 표준 이미지 생성 (Docker 외 런타임도 지원)
+ * - 레이어 최적화, 비루트 사용자 실행 등 모범 사례가 기본 적용
+ * - Paketo Buildpacks 사용: https://paketo.io
+ *
+ * [15-Factor #5 Build, Release, Run]
+ * 빌드 단계를 표준화하여 재현 가능한 이미지 생성
+ *
+ * 실행 방법: ./gradlew bootBuildImage
+ * 생성 이미지: catalog-service:0.0.1-SNAPSHOT
+ */
+tasks.bootBuildImage {
+    // 생성할 이미지 이름 지정 (기본값: project.name:project.version)
+    imageName.set("${project.name}:${project.version}")
+
+    /**
+     * [빌더 이미지 명시 지정]
+     * Spring Boot 3.x의 기본 빌더: paketobuildpacks/builder-noble-java-tiny
+     * macOS + Docker Desktop 환경에서 이미지 캐시 문제로 아래 에러가 발생할 수 있음:
+     *   "No 'io.buildpacks.builder.metadata' label found in image config labels"
+     *
+     * 원인: Docker가 이미지를 pull했지만 Spring Boot가 CNB 메타데이터 라벨을 읽지 못함
+     * 해결: 빌더를 명시적으로 지정하면 Spring Boot가 이미지를 직접 참조하여 안정적으로 동작
+     *
+     * [실무 팁]
+     * CI/CD 환경에서는 항상 빌더 이미지를 명시하는 것이 권장됨
+     * → 빌더 버전이 묵시적으로 업그레이드되어 빌드가 깨지는 것을 방지
+     */
+    builder.set("paketobuildpacks/builder-noble-java-tiny:latest")
+
+    /**
+     * [Apple Silicon(ARM64) macOS 환경 대응]
+     * Paketo 빌더는 linux/amd64 기준으로 빌드됨
+     * ARM64 Mac에서 pull 시 아키텍처 불일치로 CNB 메타데이터 라벨을 못 읽는 문제 발생:
+     *   "No 'io.buildpacks.builder.metadata' label found in image config labels ''"
+     *
+     * 해결: 빌더와 실행 이미지를 linux/amd64로 명시
+     * - 컨테이너는 어차피 linux/amd64 기반 서버(EC2, GKE 등)에 배포되므로 실용적인 선택
+     */
+    imagePlatform.set("linux/amd64")
+
+    /**
+     * [실무 팁 - 비루트 사용자]
+     * 빌드팩은 기본적으로 비루트 사용자(CNB)로 실행됨
+     * Dockerfile의 `RUN useradd spring; USER spring`과 동일한 효과
+     * 컨테이너 보안 모범 사례 자동 적용
+     */
+    environment.set(
+        mapOf(
+            // JVM 메모리 설정을 환경 변수로 주입 (빌드팩이 자동 계산하도록 비워둘 수도 있음)
+            "BP_JVM_VERSION" to "17"
+        )
+    )
+
+    docker {
+        publishRegistry {
+            username.set(project.findProperty("registryUsername") as String)
+            password.set(project.findProperty("registryToken") as String)
+            url.set(project.findProperty("registryUrl") as String)
+        }
+    }
+}
