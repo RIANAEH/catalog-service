@@ -70,7 +70,10 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew bootBuildImage \
-            --imageName ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+            --imageName ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} \
+            -PregistryUsername=${{ github.actor }} \
+            -PregistryToken=${{ secrets.GITHUB_TOKEN }} \
+            -PregistryUrl=${{ env.REGISTRY }}
       - name: OCI image vulnerability scanning
         uses: anchore/scan-action@v3
         id: scan
