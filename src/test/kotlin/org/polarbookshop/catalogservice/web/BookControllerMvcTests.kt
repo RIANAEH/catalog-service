@@ -77,7 +77,7 @@ class BookControllerMvcTests(
     @Test
     fun `when get book with existing isbn then return book`() {
         val isbn = "1234567890"
-        val book = Book(isbn = isbn, title = "Title", author = "Author", price = 9.90)
+        val book = Book(isbn = isbn, title = "Title", author = "Author", price = 9.90, publisher = "Publisher")
         given(bookService.viewBookDetails(isbn)).willReturn(book)
 
         /**
@@ -130,7 +130,7 @@ class BookControllerMvcTests(
      */
     @Test
     fun `when post book with valid data then return created`() {
-        val book = Book(isbn = "1234567890", title = "Title", author = "Author", price = 9.90)
+        val book = Book(isbn = "1234567890", title = "Title", author = "Author", price = 9.90, publisher = "Publisher")
         given(bookService.addBookToCatalog(book)).willReturn(book)
 
         mockMvc.perform(
@@ -155,7 +155,7 @@ class BookControllerMvcTests(
      */
     @Test
     fun `when post book with invalid data then return 400`() {
-        val invalidBook = Book(isbn = "invalid", title = "", author = "", price = -1.0)
+        val invalidBook = Book(isbn = "invalid", title = "", author = "", price = -1.0, publisher = "")
 
         mockMvc.perform(
             post("/books")

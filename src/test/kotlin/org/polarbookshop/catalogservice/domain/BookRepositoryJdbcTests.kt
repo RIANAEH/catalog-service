@@ -54,7 +54,7 @@ class BookRepositoryJdbcTests(
     @Test
     fun `when findByIsbn with existing isbn then return book`() {
         val isbn = "1234567890"
-        val book = Book(isbn = isbn, title = "Title", author = "Author", price = 12.90)
+        val book = Book(isbn = isbn, title = "Title", author = "Author", price = 12.90, publisher = "Publisher")
         bookRepository.save(book)
 
         val foundBook = bookRepository.findByIsbn(isbn)
@@ -73,7 +73,7 @@ class BookRepositoryJdbcTests(
     @Test
     fun `when existsByIsbn with existing isbn then return true`() {
         val isbn = "1234567891"
-        val book = Book(isbn = isbn, title = "Title", author = "Author", price = 9.90)
+        val book = Book(isbn = isbn, title = "Title", author = "Author", price = 9.90, publisher = "Publisher")
         bookRepository.save(book)
 
         val exists = bookRepository.existsByIsbn(isbn)
@@ -91,7 +91,7 @@ class BookRepositoryJdbcTests(
     @Test
     fun `when deleteByIsbn then book is removed`() {
         val isbn = "1234567892"
-        val book = Book(isbn = isbn, title = "Title", author = "Author", price = 9.90)
+        val book = Book(isbn = isbn, title = "Title", author = "Author", price = 9.90, publisher = "Publisher")
         bookRepository.save(book)
 
         bookRepository.deleteByIsbn(isbn)
